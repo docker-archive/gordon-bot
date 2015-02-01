@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/fabioxgn/go-bot"
 )
@@ -41,6 +42,7 @@ func rebuild(command *bot.Cmd) (msg string, err error) {
 		return "", err
 	}
 	req.Header.Set("Content-Type", "application/json")
+	req.SetBasicAuth(os.Getenv("LEEROY_USERNAME"), os.Getenv("LEEROY_PASS"))
 
 	client := &http.Client{}
 	resp, err := client.Do(req)

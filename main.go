@@ -16,15 +16,13 @@ const (
 )
 
 var (
-	server     string
-	channel    string
-	user       string
-	nick       string
-	pass       string
-	leeroyUser string
-	leeroyPass string
-	debug      bool
-	version    bool
+	server  string
+	channel string
+	user    string
+	nick    string
+	pass    string
+	debug   bool
+	version bool
 )
 
 func init() {
@@ -37,8 +35,6 @@ func init() {
 	flag.StringVar(&user, "user", "GordonTheTurtle", "irc user")
 	flag.StringVar(&nick, "nick", "GordonTheTurtle", "irc nick")
 	flag.StringVar(&pass, "pass", "", "irc pass")
-	flag.StringVar(&leeroyUser, "leeroy-user", "leeroy", "leeroy user")
-	flag.StringVar(&leeroyPass, "leeroy-pass", "", "leeroy pass")
 	flag.Parse()
 }
 
