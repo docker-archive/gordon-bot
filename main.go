@@ -30,7 +30,7 @@ func init() {
 	flag.BoolVar(&version, "version", false, "print version and exit")
 	flag.BoolVar(&version, "v", false, "print version and exit (shorthand)")
 	flag.BoolVar(&debug, "d", false, "run in debug mode")
-	flag.StringVar(&server, "server", "chat.freenode.net:6697", "irc server")
+	flag.StringVar(&server, "server", "irc.freenode.net:6697", "irc server")
 	flag.StringVar(&channel, "channel", "#docker-maintainers", "irc channel")
 	flag.StringVar(&user, "user", "GordonTheTurtle", "irc user")
 	flag.StringVar(&nick, "nick", "GordonTheTurtle", "irc nick")
