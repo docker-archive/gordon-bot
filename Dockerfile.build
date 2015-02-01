@@ -1,0 +1,11 @@
+FROM golang:latest
+MAINTAINER Jess Frazelle <jess@docker.com>
+
+RUN go get github.com/Sirupsen/logrus && \
+    go get github.com/fabioxgn/go-bot
+
+ADD . /go/src/github.com/jfrazelle/gordon-bot
+RUN cd /go/src/github.com/jfrazelle/gordon-bot && go install . ./...
+ENV PATH $PATH:/go/bin
+
+ENTRYPOINT ["gordon-bot"]
