@@ -7,19 +7,46 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/fabioxgn/go-bot"
 )
 
 var (
-	repo    string = "docker/docker"
-	baseurl string = "https://leeroy.dockerproject.com/"
+	RepoPrefix string = "docker/"
+	BaseUrl    string = "https://leeroy.dockerproject.com/"
 )
 
 type PullRequest struct {
 	Number  int    `json:"number"`
 	Repo    string `json:"repo"`
 	Context string `json:"context"`
+}
+
+func parsePullRequest(arg string) (pr PullRequest, err error) {
+	// parse for the repo
+	// split on #
+	nameArgs := strings.SplitN(arg, "#", 2)
+	if len(nameArgs) <= 1 {
+		return pr, fmt.Errorf("%s did not include #", arg)
+	}
+
+	pr.Repo = nameArgs[0]
+
+	// parse the second arguement for a /
+	// for if its a custom build
+	buildArgs := strings.SplitN(nameArgs[1], "/", 2)
+	if len(buildArgs) == 2 {
+		pr.Context = buildArgs[1]
+	}
+
+	// parse as int
+	pr.Number, err = strconv.Atoi(buildArgs[0])
+	if err != nil {
+		return pr, err
+	}
+
+	return pr, nil
 }
 
 func sendRequest(pr PullRequest, url string) (err error) {
@@ -43,91 +70,42 @@ func sendRequest(pr PullRequest, url string) (err error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 204 {
-		return fmt.Errorf("Requesting %s for PR %d for %s returned status code: %d", url, pr.Number, repo, resp.StatusCode)
+		return fmt.Errorf("Requesting %s for PR %d for %s returned status code: %d. Make sure the repo allows builds.", url, pr.Number, pr.Repo, resp.StatusCode)
 	}
-
 	return nil
 }
 
 func rebuild(command *bot.Cmd) (msg string, err error) {
+	tryString := "Try !rebuild libcontainer#234."
 	if len(command.Args) < 1 {
-		return "Not enough args. try: !rebuild 9437 docker/docker", nil
-	}
-	if len(command.Args) >= 2 {
-		repo = command.Args[1]
+		return "", fmt.Errorf("Not enough args. %s", tryString)
 	}
 
-	// convert the string to an int
-	num, err := strconv.Atoi(command.Args[0])
+	pr, err := parsePullRequest(command.Args[0])
 	if err != nil {
-		return "", fmt.Errorf("converting PR num to int failed: %v", err)
+		return "", fmt.Errorf("Error parsing pull request: %v. %s", err, tryString)
 	}
 
-	pr := PullRequest{
-		Number: num,
-		Repo:   repo,
+	endpoint := "build/retry"
+	if pr.Context != "" {
+		endpoint = "build/custom"
 	}
 
-	if err := sendRequest(pr, baseurl+"build/retry"); err != nil {
+	if err := sendRequest(pr, BaseUrl+endpoint); err != nil {
 		return "", err
 	}
 
-	return fmt.Sprintf("Rebuilding PR %d at https://github.com/%s/pull/%d", pr.Number, repo, pr.Number), nil
-}
-
-func customBuild(command *bot.Cmd, context string) (msg string, err error) {
-	if len(command.Args) < 1 {
-		return fmt.Sprintf("Not enough args. try: !%s 9437 docker/docker", context), nil
-	}
-	if len(command.Args) >= 2 {
-		repo = command.Args[1]
+	if pr.Context != "" {
+		return fmt.Sprintf("Building PR %d on %s at https://github.com/%s/pull/%d", pr.Number, pr.Context, pr.Repo, pr.Number), nil
 	}
 
-	// convert the string to an int
-	num, err := strconv.Atoi(command.Args[0])
-	if err != nil {
-		return "", fmt.Errorf("converting PR num to int failed: %v", err)
-	}
-
-	pr := PullRequest{
-		Number:  num,
-		Repo:    repo,
-		Context: context,
-	}
-
-	if err := sendRequest(pr, baseurl+"build/custom"); err != nil {
-		return "", err
-	}
-
-	return fmt.Sprintf("Building PR %d on %s at https://github.com/%s/pull/%d", pr.Number, context, repo, pr.Number), nil
-}
-
-func lxcBuild(command *bot.Cmd) (msg string, err error) {
-	return customBuild(command, "lxc")
-}
-
-func windowsBuild(command *bot.Cmd) (msg string, err error) {
-	return customBuild(command, "windows")
+	return fmt.Sprintf("Rebuilding PR %d at https://github.com/%s/pull/%d", pr.Number, pr.Repo, pr.Number), nil
 }
 
 func init() {
 	bot.RegisterCommand(
 		"rebuild",
 		"Rebuilds a PR number on Jenkins.",
-		"9437",
+		"libcontainer#9437",
 		rebuild)
-
-	bot.RegisterCommand(
-		"lxc",
-		"Build a PR on an lxc box with the lxc driver",
-		"9345",
-		lxcBuild,
-	)
-
-	bot.RegisterCommand(
-		"windows",
-		"Build a PR on a windows box",
-		"9345",
-		windowsBuild,
-	)
 }
