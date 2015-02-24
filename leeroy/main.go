@@ -37,6 +37,10 @@ func parsePullRequest(arg string) (pr PullRequest, err error) {
 	// for if its a custom build
 	buildArgs := strings.SplitN(nameArgs[1], "/", 2)
 	if len(buildArgs) == 2 {
+		// don't allow custom builds on anything else
+		if pr.Repo != "docker/docker" {
+			return pr, fmt.Errorf("Custom builds are not currently allowed on %s, only docker/docker", pr.Repo)
+		}
 		pr.Context = buildArgs[1]
 	}
 
