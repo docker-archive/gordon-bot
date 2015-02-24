@@ -31,7 +31,7 @@ func parsePullRequest(arg string) (pr PullRequest, err error) {
 		return pr, fmt.Errorf("%s did not include #", arg)
 	}
 
-	pr.Repo = nameArgs[0]
+	pr.Repo = RepoPrefix + nameArgs[0]
 
 	// parse the second arguement for a /
 	// for if its a custom build
