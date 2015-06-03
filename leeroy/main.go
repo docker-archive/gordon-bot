@@ -14,7 +14,7 @@ import (
 
 var (
 	RepoPrefix string = "docker/"
-	BaseUrl    string = "https://leeroy.dockerproject.com/"
+	BaseUrl    string = "https://leeroy.dockerproject.org/"
 )
 
 type PullRequest struct {
