@@ -13,8 +13,7 @@ import (
 )
 
 var (
-	RepoPrefix string = "docker/"
-	BaseUrl    string = "https://leeroy.dockerproject.org/"
+	BaseUrl string = "https://leeroy.dockerproject.org/"
 )
 
 type PullRequest struct {
@@ -24,14 +23,19 @@ type PullRequest struct {
 }
 
 func parsePullRequest(arg string) (pr PullRequest, err error) {
+	repoPrefix := "docker/"
 	// parse for the repo
 	// split on #
 	nameArgs := strings.SplitN(arg, "#", 2)
 	if len(nameArgs) <= 1 {
 		return pr, fmt.Errorf("%s did not include #", arg)
 	}
+	repoName := nameArgs[0]
+	if repoName == "runc" {
+		repoPrefix = "opencontainers/"
+	}
 
-	pr.Repo = RepoPrefix + nameArgs[0]
+	pr.Repo = repoPrefix + nameArgs[0]
 
 	// parse the second arguement for a /
 	// for if its a custom build

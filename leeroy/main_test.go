@@ -12,6 +12,7 @@ type TestPR struct {
 }
 
 func TestParsePullRequest(t *testing.T) {
+	var RepoPrefix string = "docker/"
 	tests := map[string]TestPR{
 		"1234": TestPR{
 			ShouldFail: true,
@@ -22,6 +23,13 @@ func TestParsePullRequest(t *testing.T) {
 			PR: PullRequest{
 				Number: 1234,
 				Repo:   RepoPrefix + "docker",
+			},
+		},
+		"runc#1234": TestPR{
+			ShouldFail: false,
+			PR: PullRequest{
+				Number: 1234,
+				Repo:   "opencontainers/runc",
 			},
 		},
 		"docker#23/lxc": TestPR{
