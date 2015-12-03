@@ -1,10 +1,33 @@
-FROM debian:jessie
+FROM alpine
 MAINTAINER Jessica Frazelle <jess@docker.com>
 
-RUN apt-get update && apt-get install -y ca-certificates
+EXPOSE 80
+ENV PATH /go/bin:/usr/local/go/bin:$PATH
+ENV GOPATH /go
 
-ADD https://jesss.s3.amazonaws.com/binaries/gordon-bot /usr/local/bin/gordon-bot
+RUN	apk update && apk add \
+	ca-certificates \
+	&& rm -rf /var/cache/apk/*
 
-RUN chmod +x /usr/local/bin/gordon-bot
+COPY . /go/src/github.com/jfrazelle/gordon-bot
 
-ENTRYPOINT [ "/usr/local/bin/gordon-bot" ]
+RUN buildDeps=' \
+		go \
+		git \
+		gcc \
+		libc-dev \
+		libgcc \
+	' \
+	set -x \
+	&& apk update \
+	&& apk add $buildDeps \
+	&& cd /go/src/github.com/jfrazelle/gordon-bot \
+	&& go get -d -v github.com/jfrazelle/gordon-bot \
+	&& go build -o /usr/bin/gordon-bot . \
+	&& apk del $buildDeps \
+	&& rm -rf /var/cache/apk/* \
+	&& rm -rf /go \
+	&& echo "Build complete."
+
+
+ENTRYPOINT [ "gordon-bot" ]
