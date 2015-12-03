@@ -1,7 +1,6 @@
 FROM alpine
 MAINTAINER Jessica Frazelle <jess@docker.com>
 
-EXPOSE 80
 ENV PATH /go/bin:/usr/local/go/bin:$PATH
 ENV GOPATH /go
 
