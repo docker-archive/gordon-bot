@@ -8,7 +8,7 @@ RUN	apk update && apk add \
 	ca-certificates \
 	&& rm -rf /var/cache/apk/*
 
-COPY . /go/src/github.com/jfrazelle/gordon-bot
+COPY . /go/src/github.com/docker/gordon-bot
 
 RUN buildDeps=' \
 		go \
@@ -20,8 +20,8 @@ RUN buildDeps=' \
 	set -x \
 	&& apk update \
 	&& apk add $buildDeps \
-	&& cd /go/src/github.com/jfrazelle/gordon-bot \
-	&& go get -d -v github.com/jfrazelle/gordon-bot \
+	&& cd /go/src/github.com/docker/gordon-bot \
+	&& go get -d -v github.com/docker/gordon-bot \
 	&& go build -o /usr/bin/gordon-bot . \
 	&& apk del $buildDeps \
 	&& rm -rf /var/cache/apk/* \

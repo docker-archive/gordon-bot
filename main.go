@@ -5,10 +5,9 @@ import (
 	"fmt"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/fabioxgn/go-bot"
+	_ "github.com/docker/gordon-bot/leeroy"
 	_ "github.com/fabioxgn/go-bot/commands/gif"
 	_ "github.com/fabioxgn/go-bot/commands/godoc"
-	_ "github.com/jfrazelle/gordon-bot/leeroy"
 )
 
 const (
