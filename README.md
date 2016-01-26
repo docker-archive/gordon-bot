@@ -23,6 +23,6 @@ $ docker run -d --restart always \
     --name gordon-bot \
     -e LEEROY_USERNAME \
     -e LEEROY_PASS \
-    jess/gordon-bot -d \
+    dockercore/gordon-bot -d \
     -pass="YOUR_IRCPASS" 
 ```
