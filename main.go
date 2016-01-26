@@ -6,6 +6,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	_ "github.com/docker/gordon-bot/leeroy"
+	bot "github.com/fabioxgn/go-bot"
 	_ "github.com/fabioxgn/go-bot/commands/gif"
 	_ "github.com/fabioxgn/go-bot/commands/godoc"
 )
