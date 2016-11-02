@@ -14,6 +14,7 @@ import (
 
 var (
 	BaseUrl string = "https://leeroy.dockerproject.org/"
+	Channel string
 )
 
 type PullRequest struct {
@@ -84,6 +85,10 @@ func sendRequest(pr PullRequest, url string) (err error) {
 }
 
 func rebuild(command *bot.Cmd) (msg string, err error) {
+	if Channel != "" && command.Channel != Channel {
+		return "", fmt.Errorf("Received request from unknown channel %q", command.Channel)
+	}
+
 	tryString := "Try !rebuild libcontainer#234."
 	if len(command.Args) < 1 {
 		return "", fmt.Errorf("Not enough args. %s", tryString)
