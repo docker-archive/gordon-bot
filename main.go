@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	log "github.com/Sirupsen/logrus"
-	_ "github.com/docker/gordon-bot/leeroy"
+	leeroy "github.com/docker/gordon-bot/leeroy"
 	bot "github.com/fabioxgn/go-bot"
 	_ "github.com/fabioxgn/go-bot/commands/gif"
 	_ "github.com/fabioxgn/go-bot/commands/godoc"
@@ -48,6 +48,11 @@ func main() {
 		fmt.Println(VERSION)
 		return
 	}
+
+	// Leeroy plugin needs the channel information so it can exclude any
+	// rebuilding requests from undesired channels (e.g., #general when used
+	// over a Slack bridge).
+	leeroy.Channel = channel
 
 	bot.Run(&bot.Config{
 		Server:   server,
